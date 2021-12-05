@@ -45,7 +45,7 @@ class User {
         int gorna_granica = 100;
         //generate random values from 0-24
         int nonce = random.nextInt(gorna_granica);
-        System.out.println(nonce);
+       // System.out.println(nonce);
         nonce_A = nonce;
         return nonce;
     }
@@ -146,24 +146,24 @@ class KDCServer {
             poraka_bobKey += String.valueOf(id_Alice);
             poraka_bobKey += " ";
             poraka_bobKey += String.valueOf(lifetime);
-            System.out.println("Poraka od alice se zaedno: " + poraka_aliceKEy);
+            System.out.println("Vrednosti koi treba da se kriptiraat: " + poraka_aliceKEy);
             byte[] kriptirano_aliceKey = AES.encrypt(poraka_aliceKEy.getBytes("UTF-8"), Alice_key);// so klucot na ALice
-            System.out.println("Kriptirana poraka so Alice Key: " + kriptirano_aliceKey.toString());//kriptirano
+           // System.out.println("Kriptirana poraka so Alice Key: " + kriptirano_aliceKey.toString());//kriptirano
             kriptiranaAlice = kriptirano_aliceKey;
             StringBuilder ak = new StringBuilder();
             for (byte b : kriptirano_aliceKey) {
                 ak.append(String.format("%02X ", b));//porakata da ja pretocime vo 02x?
             }
-            System.out.println("Kriptirano so String Builder so ALice key:" + ak.toString());//enkriptirana poraka
+            System.out.println("Kriptirano so ALice key:" + ak.toString());//enkriptirana poraka
             byte[] kriptirano_bobKey = AES.encrypt(poraka_bobKey.getBytes("UTF-8"), Bob_key);
-            System.out.println("Kriptirana poraka so Bob Key" + kriptirano_bobKey.toString());
+          //  System.out.println("Kriptirana poraka so Bob Key" + kriptirano_bobKey.toString());
 
             StringBuilder bk = new StringBuilder();
             for (byte b : kriptirano_bobKey) {
                 bk.append(String.format("%02X ", b));//porakata da ja pretocime vo 02x?
             }
             kriptiranaBob = kriptirano_bobKey;
-            System.out.println("Kriptirana poraka so String builder so Bob Key: " + bk.toString());
+            System.out.println("Kriptirana poraka Bob Key: " + bk.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -234,21 +234,24 @@ public class KerberosProtocol {
     public static String klucot;
 
     public static void request_Alice(KDCServer server, int id_alice, int id_Bob, int nonce_alice) {
+        System.out.println("\n");
         System.out.println("Request od Alice do KDC");
         server.receiveKDC(id_alice, id_Bob, nonce_alice);
     }
 
     public static void KDCToAlice(KDCServer kdc_server, User Alice, User Bob) {
-
+        System.out.println("\n");
+        System.out.println("KDC TO ALICE: ");
         //  System.out.println("ALice bytes:" + kdc_server.getKriptiranaAlice());
         //  System.out.println("Bob bytes: " + kdc_server.getKriptiranaBob());
         byte[] decryptedString = AES.decrypt(kdc_server.getKriptiranaAlice(), kdc_server.getAlice_key());
-        StringBuilder ak = new StringBuilder();
+      //  StringBuilder ak = new StringBuilder();
         //    for (byte b : kdc_server.getKriptiranaAlice()) {
         //        ak.append(String.format("%02X ", b));//porakata da ja pretocime vo 02x?
         //     }
         // System.out.println("Test kript: "+ak.toString());
-        System.out.println(new String(decryptedString));
+
+        //System.out.println(new String(decryptedString));
 
 
         // string [] parts = string.split()
@@ -261,11 +264,11 @@ public class KerberosProtocol {
         int nonce_Alice = Integer.parseInt(arrOfStr[2]);
         // int idBob= Integer.parseInt(arrOfStr[3]);
         klucot = kluc;
-        System.out.println("kluc: " + kluc);
+    //    System.out.println("kluc: " + kluc);
 
-        System.out.println("Lifetime: " + lifetime);
+     //   System.out.println("Lifetime: " + lifetime);
 
-        System.out.println("Nonce na alice: " + nonce_Alice);
+       // System.out.println("Nonce na alice: " + nonce_Alice);
 
         System.out.println("Verificiranje: ");
 
@@ -284,7 +287,9 @@ public class KerberosProtocol {
 
         try {
             byte[] kriptirano_AB = AES.encrypt(poraka.getBytes("UTF-8"), kluc);// so klucot na ALice
-            System.out.println("Kriptirana poraka so Alice Key: " + kriptirano_AB.toString());//kriptirano
+          //  System.out.println("Kriptirana poraka so Alice Key: " + kriptirano_AB.toString());//kriptirano
+
+
             //  kriptiranaAlice = kriptirano_aliceKey;
             StringBuilder ab = new StringBuilder();
             for (byte b : kriptirano_AB) {
@@ -292,7 +297,7 @@ public class KerberosProtocol {
             }
             kriptiranoAB = kriptirano_AB;
             System.out.println("Kriptirana poraka AB: " + ab.toString());
-            System.out.println("Porakata glasi: " + poraka);
+            //System.out.println("Porakata glasi: " + poraka);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -300,26 +305,24 @@ public class KerberosProtocol {
     }
 
     public static void AliceToBob(KDCServer kdcServer, User alice, User bob) {
+        System.out.println("\n");
         System.out.println("Alice to BOb: ");
-        System.out.println(kriptiranoAB);
+       // System.out.println(kriptiranoAB);
         byte[] dekriptirano = AES.decrypt(kriptiranoAB, klucot);
 
         StringBuilder test = new StringBuilder();
-        for (byte b : kriptiranoAB) {
-            test.append(String.format("%02X ", b));//porakata da ja pretocime vo 02x?
-        }
-        System.out.println("Test kript: " + test.toString());
+     for (byte b : kriptiranoAB) {
+          test.append(String.format("%02X ", b));//porakata da ja pretocime vo 02x?
+       }
+        System.out.println("Kriptirana poraka AB:  " + test.toString());
 
-        System.out.println("Test dekriptirano Yab");
+
         System.out.println(new String(dekriptirano));
 
         String strYab = new String(dekriptirano);
 
         String[] nizaStr = strYab.split(" ", 3);
-        System.out.println("TEST YAB");
-        for (int i = 0; i < nizaStr.length; i++) {
-            System.out.println("ID STRING: " + i + " STRINGOT: " + nizaStr[i]);
-        }
+
         String timestampPRVDEL = nizaStr[0];
 
         String timestampVTORDEL = nizaStr[1];
@@ -328,18 +331,17 @@ public class KerberosProtocol {
         rezultatTimestamp += timestampPRVDEL;
         rezultatTimestamp += " ";
         rezultatTimestamp += timestampVTORDEL;
-        System.out.println("Rezult timestamp: " + rezultatTimestamp);
+
         int idAodAB = Integer.parseInt(nizaStr[2]);
 
-        System.out.println("ID od AB ALICE " + idAodAB);
-        System.out.println("ZAVRSENO");
+
 
 
         //dekripcija so klucot na bob
 
         byte[] dekriptiranoBob = AES.decrypt(kdcServer.getKriptiranaBob(), kdcServer.getBob_key());
-        System.out.println("Test dekripcija bob");
-        System.out.println(new String(dekriptiranoBob));
+        System.out.println("Dekripcija na Yb: ");
+      //  System.out.println(new String(dekriptiranoBob));
 
 //dekripcija prvo na ybob
         String strYbob = new String(dekriptiranoBob);
@@ -365,7 +367,7 @@ public class KerberosProtocol {
 
 
     public static void main(String args[]) {
-        System.out.println("Zdravo");
+
         User Alice = new User(1, "thesecretkeyAlice");
         User Bob = new User(2, "thesecretkeyBob");
         KDCServer kdc_server = new KDCServer();
@@ -374,8 +376,8 @@ public class KerberosProtocol {
         kdc_server.setBob_key("thesecretkeyBob");
 
         int nonce_Alice = Alice.generate_Nonce();
-        System.out.println("Nonce na alice: " + nonce_Alice);
-        System.out.println("Timestamp na kDC:" + kdc_server.generate_timestamp());
+
+        System.out.println("Timestamp na KDC:" + kdc_server.generate_timestamp());
         //alice isprakja request do kdc server
         request_Alice(kdc_server, Alice.getID(), Bob.getID(), nonce_Alice);//izlez: [B@5680a178
         //  kdc_server.receiveKDC(Alice.getID(),Bob.getID(),nonce_Alice);
